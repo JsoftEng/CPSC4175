@@ -29,7 +29,7 @@
   - __Boundary Classes:__ Message Feed
   - __Control Classes:__ Search User
 6. __Using your answer to the previous question, draw an appropriate__ ___class diagram.___
-  - [Class Diagram|Message System Class Diagram.pdf]
+  - [[Class Diagram|Message System Class Diagram.pdf]]
 7. __Complete a CRC card for one of your classes.__
   - [Insert Link Here]
 8. __Draw a__ ___statechart___ __for one specific behavior of your project.__
