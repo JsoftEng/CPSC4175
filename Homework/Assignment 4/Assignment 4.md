@@ -16,7 +16,7 @@
 4. __Write a__ ___unsuccessful scenario___ __pertaining to your project.__
     - __Exception Scenario__
       - User A logs in.
-      - User A ___searchs for users.___
+      - User A ___searches for users.___
       - The user list generates.
       - User A selects User B.
       - User A ___sends a message___ to User B, User A intended to select User C.
