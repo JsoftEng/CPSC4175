@@ -5,11 +5,11 @@
 
 ### Introduction
 1. Introduction
-  - 1.1 Definitions, Acronyms and Abbreviations
+    - 1.1 Definitions, Acronyms and Abbreviations
 2. Overall Description
 3. Specific Requirements
-  - 3.1 - Functional Requirements
-    - 3.1.1 User Class 1 - The User
+    - 3.1 - Functional Requirements
+      - 3.1.1 User Class 1 - The User
 
 
 #### 1. Introduction
