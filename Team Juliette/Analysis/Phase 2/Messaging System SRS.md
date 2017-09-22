@@ -38,7 +38,7 @@
       - ___3.2.1.3 Functional Requirement 1.3___
         - __ID: FR3__
         - __Title:__ User Logout
-        - __DESC:__ The system shall enable the user to log out of the user interface, disabling access to core functionality of of messaging system.
+        - __DESC:__ The system shall enable the user to log out of the user interface, disabling access to core functionality of messaging system.
         - __RAT:__ Enables users to safely disengage from application when utilizing messaging system on non-trusted devices.
         - __DEP:__ FR2
       - ___3.2.1.4 Functional Requirement 1.4___
