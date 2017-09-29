@@ -14,12 +14,11 @@
         - _goto statements_
 3. __Give two versions of coding standards for subprocedure blocks. This may require an internet search. Which do you prefer, and why?__
     - __Lisp:__  
-          (defun foo (A &optional B &optional))
-    - __Java:__
-          public static void foo(int A, float B){
-            //TODO
-          }
-
+            (defun foo (A &optional B &optional))
+    - __Java:__  
+            public static void foo(int A, float B){
+                //TODO
+            }
         - My preference lies with java. Althought the declaration of a function in lisp appears to be more elegant and succint, the overdose of parentheses was never appealing to me.
 4. __An informal description of the DRY principle is this: "The second time you write exactly the same code, stop what you are doing and place that functionality in a subprocedure. Then, invoke the subprocedure whenever you need that functionality." Give one example of this from your previous programming experience. If you have never experienced this in practice, make up an example.__
     - This is an example from one of the automation programs that I've designed at my job, however it's something that I do frequently wherever it's necessary. Whenever I have to connect to a database I generally create subroutines that open/close the connection. This reduces code obfuscation in my experience and also saves a little bit of time coding the next SQL statement execution.
