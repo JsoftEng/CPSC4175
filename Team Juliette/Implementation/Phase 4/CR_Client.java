@@ -26,17 +26,6 @@ public class CR_Client implements Runnable {
 
     public static void main(String[] args) {
         displayTitleMenu();
-        if (titleMenuChoice.equals("2")){
-
-            if (!username.equals("Q") && !password.equals("Q")){
-                System.out.println("Login Successful!");
-                if(displayMainMenu().equals("1")) {
-                    joinChatRoom();
-                }
-            }else{
-                System.out.println("Invalid Username or Password.");
-            }
-        }
         /*
         else if(titleMenuChoice.equals("1")){
             if(userSignUp()){
@@ -156,26 +145,73 @@ public class CR_Client implements Runnable {
 
     public static void userSignUp(){
         String fName,lName,username,password,email;
+        boolean exists = false;
         Scanner scan = new Scanner(System.in);
         User entity;
         do {
-            System.out.print("\nPlease enter your first name: ");
+            System.out.print("Please enter your first name: ");
             fName = scan.next().trim();
-            System.out.print("\nPlease enter your last name: ");
+            System.out.print("Please enter your last name: ");
             lName = scan.next().trim();
-            System.out.print("\nPlease enter your desired username: ");
+            System.out.print("Please enter your desired username: ");
             username = scan.next().trim();
-            System.out.print("\nPlease enter a password: ");
+            System.out.print("Please enter a password: ");
             password = scan.next().trim();
-            System.out.print("\n Please enter a valid e-mail address: ");
+            System.out.print("Please enter a valid e-mail address: ");
             email = scan.next().trim();
-        }while(!verifyNewAcc(entity));
 
+            entity = new User(fName,lName,email,username,password);
+            exists = verifyNewAcc(entity);
+        }while(exists);
+
+        System.out.println("\nAccount created successfully!\n");
+        scan.close();
+        displayTitleMenu();
 
     }
 
     public static boolean verifyNewAcc(User entity){
+        // The database connection object
+        Connection db = null;
+        //SQL query object
+        Statement stmt;
+        //Record/Result set
+        ResultSet rs = null;
+        String Qt = "'";
         boolean status = false;
+            try {
+                //Create SQLite database connection
+                db = Connectivity.dbConnect();
+                stmt = db.createStatement();
+                stmt.setQueryTimeout(30);
+
+                //Create resultset based on user credentials
+                rs = stmt.executeQuery("SELECT * FROM UserInfo WHERE Username = " + Qt + entity.getUserName() + Qt);
+                status = rs.next();
+                if(status){
+                    System.out.println("An account with that username already exists!\n");
+                }else{
+                    stmt.executeUpdate("INSERT INTO UserInfo ([First Name],[Last Name],Username,Password) VALUES ("
+                            + Qt + entity.getFirstName() + Qt + ", "
+                            + Qt + entity.getLastName() + Qt + ", "
+                            + Qt + entity.getUserName() + Qt + ", "
+                            + Qt + entity.getPassword() + Qt + ")");
+                }
+
+            } catch (SQLException se) {
+                System.out.println(se.getMessage());
+            } finally {
+                try {
+                    if (db != null) {
+                        db.close();
+                        if (rs != null) {
+                            rs.close();
+                        }
+                    }
+                } catch (SQLException se) {
+                    System.out.println(se.getMessage());
+                }
+            }
         return status;
     }
 
