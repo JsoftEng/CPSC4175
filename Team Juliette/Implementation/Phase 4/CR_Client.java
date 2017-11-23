@@ -1,15 +1,6 @@
-
-import java.io.DataInputStream;
-import java.io.PrintStream;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.IOException;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.io.*;
+import java.net.*;
+import java.sql.*;
 import java.util.Scanner;
 
 public class CR_Client implements Runnable {
@@ -23,19 +14,13 @@ public class CR_Client implements Runnable {
 
     private static BufferedReader inputLine = null;
     private static boolean closed = false;
+    private static boolean userExit = false;
+    private static boolean userLogout = false;
 
     public static void main(String[] args) {
-        displayTitleMenu();
-        /*
-        else if(titleMenuChoice.equals("1")){
-            if(userSignUp()){
-
-            }
-        }
-        else if(titleMenuChoice.equals("1")){
-
-        }
-        */
+        do {
+            displayTitleMenu();
+        }while(!userExit);
     }
 
     /*
@@ -52,10 +37,11 @@ public class CR_Client implements Runnable {
         try {
             while ((responseLine = is.readLine()) != null) {
                 System.out.println(responseLine);
-                if (responseLine.indexOf("*** Bye") != -1)
-                    break;
+                if (responseLine.indexOf("*** Bye") != -1) {
+                    closed = true;
+                    return;
+                }
             }
-            closed = true;
         } catch (IOException e) {
             System.err.println("IOException:  " + e);
         }
@@ -63,36 +49,61 @@ public class CR_Client implements Runnable {
 
     public static void displayTitleMenu(){
         Scanner scan = new Scanner(System.in);
-        System.out.println("\t\t\t\tTitle Menu");
-        System.out.println("Please choose an option:");
-        System.out.println("\t\t1. Create an Account");
-        System.out.println("\t\t2. Login");
-        System.out.println("\t\t3. Exit");
+        String userIn = "";
+        System.out.println("\t\t\tTitle Menu");
+        System.out.println("----------------------------------");
         do {
-            if (scan.next().trim().equals("1")) {
+            System.out.println("Please choose an option:");
+            System.out.println("\t\t1. Create an Account");
+            System.out.println("\t\t2. Login");
+            System.out.println("\t\t3. Exit");
+            System.out.println("----------------------------------");
+            userIn = scan.next().trim();
+            if (userIn.equals("1")) {
                 userSignUp();
-            } else if (scan.next().trim().equals("2")) {
+            } else if (userIn.equals("2")) {
                 if(userLogin()){
-                    displayMainMenu();
+                    System.out.println("Login Successful!");
+                    do {
+                        displayMainMenu();
+                    }while(!userLogout);
                 }
-            } else if (scan.next().trim().equals("3")) {
+            } else if (userIn.equals("3")) {
                 System.out.println("Goodbye!");
+                userExit = true;
             } else {
                 System.out.print("Invalid Input! Please choose a valid option: ");
 
             }
-        }while(!scan.next().trim().equals("1")||!scan.next().trim().equals("2")||!scan.next().trim().equals("3"));
+        }while(!userIn.equals("1")&&!userIn.equals("2")&&!userIn.equals("3"));
     }
 
-    public static String displayMainMenu(){
+    public static void displayMainMenu(){
         Scanner scan = new Scanner(System.in);
-        System.out.println("\t\t\t\tMain Menu");
-        System.out.println("Please choose an option:");
-        System.out.println("\t\t1. Join Chat Room");
-        System.out.println("\t\t2. View Private Messages");
-        System.out.println("\t\t3. Update Status");
-        System.out.println("\t\t4. Log Out");
-        return scan.next().trim();
+        String userIn = "";
+        System.out.println("\t\t\tMain Menu");
+        System.out.println("----------------------------------");
+        do {
+            System.out.println("Please choose an option:");
+            System.out.println("\t\t1. Join Chat Room");
+            System.out.println("\t\t2. View Private Messages");
+            System.out.println("\t\t3. Update Status");
+            System.out.println("\t\t4. Log Out");
+            System.out.println("----------------------------------");
+            userIn = scan.next().trim();
+            if (userIn.equals("1")) {
+                joinChatRoom();
+            } else if (userIn.equals("2")) {
+                //TODO
+            } else if (userIn.equals("3")) {
+                //TODO
+            } else if (userIn.equals("4")) {
+                System.out.println("Log out successful!");
+                userLogout = true;
+            }else {
+                System.out.print("Invalid Input! Please choose a valid option: ");
+            }
+        }while(!userIn.equals("1")&&!userIn.equals("2")&&!userIn.equals("3")&&!userIn.equals("4"));
     }
 
     public static boolean userLogin() {
@@ -123,6 +134,9 @@ public class CR_Client implements Runnable {
                 //Create resultset based on user credentials
                 rs = stmt.executeQuery("SELECT * FROM [UserInfo] WHERE Username = " + Qt + username + Qt + " AND Password = " + Qt + password + Qt);
                 result = rs.next();
+                if (!result){
+                    System.out.println("Invalid Username/Password!");
+                }
 
             } catch (SQLException se) {
                 System.out.println(se.getMessage());

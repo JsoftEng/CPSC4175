@@ -1,9 +1,6 @@
-
-import java.io.DataInputStream;
-import java.io.PrintStream;
-import java.io.IOException;
-import java.net.Socket;
-import java.net.ServerSocket;
+import java.io.*;
+import java.net.*;
+import java.sql.*;
 
 /*
  * A chat server that delivers public and private messages.
@@ -23,12 +20,8 @@ public class CR_Server {
 
         // The default port number.
         int portNumber = 6185;
-        if (args.length < 1) {
-            System.out.println("Usage: java MultiThreadChatServerSync <portNumber>\n"
-                    + "Now using port number=" + portNumber);
-        } else {
-            portNumber = Integer.valueOf(args[0]).intValue();
-        }
+        System.out.println("Usage: java MultiThreadChatServerSync <portNumber>\n"
+                + "Now using port number=" + portNumber);
 
     /*
      * Open a server socket on the portNumber (default 2222). Note that we can
@@ -94,6 +87,14 @@ class clientThread extends Thread {
     public void run() {
         int maxClientsCount = this.maxClientsCount;
         clientThread[] threads = this.threads;
+        // The database connection object
+        Connection db = null;
+        //SQL query object
+        Statement stmt;
+        //Record/Result set
+        ResultSet rs = null;
+        String Qt = "'";
+        boolean result = false;
 
         try {
       /*
@@ -103,10 +104,39 @@ class clientThread extends Thread {
             os = new PrintStream(clientSocket.getOutputStream());
             String name;
             while (true) {
-                os.println("Enter your name.");
+                os.println("Enter your username.");
                 name = is.readLine().trim();
                 if (name.indexOf('@') == -1) {
-                    break;
+                    try {
+
+                        //Create SQLite database connection
+                        db = Connectivity.dbConnect();
+                        stmt = db.createStatement();
+                        stmt.setQueryTimeout(30);
+
+                        //Create resultset based on user credentials
+                        rs = stmt.executeQuery("SELECT * FROM [UserInfo] WHERE Username = " + Qt + name + Qt);
+                        result = rs.next();
+                        if (!result){
+                            os.println("Username does not exist!");
+                        }else{
+                            break;
+                        }
+
+                    } catch (SQLException se) {
+                        System.out.println(se.getMessage());
+                    } finally {
+                        try {
+                            if (db != null) {
+                                db.close();
+                                if (rs != null) {
+                                    rs.close();
+                                }
+                            }
+                        } catch (SQLException se) {
+                            System.out.println(se.getMessage());
+                        }
+                    }
                 } else {
                     os.println("The name should not contain '@' character.");
                 }
