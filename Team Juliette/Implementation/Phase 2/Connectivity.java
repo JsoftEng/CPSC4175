@@ -3,10 +3,6 @@ package teamjuliette.phase2;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-/**
- * Created by John Johnson on 9/15/2017.
- */
-
 public class Connectivity {
 
     private static Connection db = null;
