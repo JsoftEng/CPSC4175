@@ -1,12 +1,13 @@
 public class User {
-    private String userName, password, firstName, lastName, email;
+    private String userName, password, firstName, lastName, email, status;
 
-    public User(String firstName, String lastName, String email, String userName, String password){
+    public User(String firstName, String lastName, String email, String userName, String password, String status){
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.userName = userName;
         this.password = password;
+        this.status = status;
     }
 
     public String getFirstName(){
@@ -29,6 +30,10 @@ public class User {
         return password;
     }
 
+    public String getStatus(){
+        return status;
+    }
+
     public void setFirstName(String value){
         this.firstName = value;
     }
@@ -47,5 +52,9 @@ public class User {
 
     public void setPassword(String value){
         this.password = value;
+    }
+
+    public void setStatus(String value){
+        this.status = value;
     }
 }

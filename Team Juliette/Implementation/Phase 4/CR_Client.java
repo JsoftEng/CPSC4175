@@ -16,11 +16,29 @@ public class CR_Client implements Runnable {
     private static boolean closed = false;
     private static boolean userExit = false;
     private static boolean userLogout = false;
+    private static User currentUser = null;
 
     public static void main(String[] args) {
         do {
             displayTitleMenu();
         }while(!userExit);
+
+        /*
+         * Close the output stream, close the input stream, close the socket.
+         */
+        try {
+            if (os != null) {
+                os.close();
+            }
+            if (is != null) {
+                is.close();
+            }
+            if (clientSocket != null) {
+                clientSocket.close();
+            }
+        }catch (IOException e) {
+            System.err.println("IOException:  " + e);
+        }
     }
 
     /*
@@ -39,6 +57,7 @@ public class CR_Client implements Runnable {
                 System.out.println(responseLine);
                 if (responseLine.indexOf("*** Bye") != -1) {
                     closed = true;
+                    System.out.println("Press <Enter> to continue.");
                     return;
                 }
             }
@@ -47,9 +66,12 @@ public class CR_Client implements Runnable {
         }
     }
 
+    /*
+     * Display title menu choices
+     */
     public static void displayTitleMenu(){
         Scanner scan = new Scanner(System.in);
-        String userIn = "";
+        String userIn;
         System.out.println("\t\t\tTitle Menu");
         System.out.println("----------------------------------");
         do {
@@ -73,30 +95,33 @@ public class CR_Client implements Runnable {
                 userExit = true;
             } else {
                 System.out.print("Invalid Input! Please choose a valid option: ");
-
             }
         }while(!userIn.equals("1")&&!userIn.equals("2")&&!userIn.equals("3"));
     }
 
+    /*
+     * Display main menu choices
+     */
     public static void displayMainMenu(){
         Scanner scan = new Scanner(System.in);
-        String userIn = "";
+        String userIn;
         System.out.println("\t\t\tMain Menu");
         System.out.println("----------------------------------");
         do {
             System.out.println("Please choose an option:");
             System.out.println("\t\t1. Join Chat Room");
             System.out.println("\t\t2. View Private Messages");
-            System.out.println("\t\t3. Update Status");
+            System.out.println("\t\t3. Edit Profile");
             System.out.println("\t\t4. Log Out");
             System.out.println("----------------------------------");
             userIn = scan.next().trim();
             if (userIn.equals("1")) {
+                closed = false;
                 joinChatRoom();
             } else if (userIn.equals("2")) {
                 //TODO
             } else if (userIn.equals("3")) {
-                //TODO
+                editUserProfile();
             } else if (userIn.equals("4")) {
                 System.out.println("Log out successful!");
                 userLogout = true;
@@ -106,6 +131,92 @@ public class CR_Client implements Runnable {
         }while(!userIn.equals("1")&&!userIn.equals("2")&&!userIn.equals("3")&&!userIn.equals("4"));
     }
 
+    public static void editUserProfile() {
+        Connection db = null;
+        Statement stmt;
+        Scanner scan = new Scanner(System.in);
+        scan.useDelimiter("\\n");
+        String userIn;
+        try {
+
+            //Create SQLite database connection
+            db = Connectivity.dbConnect();
+            stmt = db.createStatement();
+            stmt.setQueryTimeout(30);
+            System.out.println("\t\t\tEdit User Profile");
+            System.out.println("----------------------------------");
+            do {
+                System.out.println("Select the item that you wish to change.");
+                System.out.println("\t\t[1] Username: " + currentUser.getUserName());
+                System.out.println("\t\t-------------");
+                System.out.println("\t\t[2] Password: " + currentUser.getPassword());
+                System.out.println("\t\t-------------");
+                System.out.println("\t\t[3] First Name: " + currentUser.getFirstName());
+                System.out.println("\t\t-------------");
+                System.out.println("\t\t[4] Last Name: " + currentUser.getLastName());
+                System.out.println("\t\t-------------");
+                System.out.println("\t\t[5] Email: " + currentUser.getEmail());
+                System.out.println("\t\t-------------");
+                System.out.println("\t\t[6] Status: " + currentUser.getStatus());
+                System.out.println("----------------------------------");
+                userIn = scan.next().trim();
+                if (userIn.equals("1")) {
+                    String username;
+                    System.out.println("Please enter your new username: ");
+                    username = scan.next().trim();
+                    stmt.executeUpdate("UPDATE UserInfo SET Username = '" + username + "' WHERE Username = '" + currentUser.getUserName() + "'");
+                    currentUser.setUserName(username);
+                } else if (userIn.equals("2")) {
+                    String password;
+                    System.out.println("Please enter your new Password: ");
+                    password = scan.next().trim();
+                    stmt.executeUpdate("UPDATE UserInfo SET Password = '" + password + "' WHERE Username = '" + currentUser.getUserName() + "'");
+                    currentUser.setPassword(password);
+                } else if (userIn.equals("3")) {
+                    String firstName;
+                    System.out.println("Please enter your new First Name: ");
+                    firstName = scan.next().trim();
+                    stmt.executeUpdate("UPDATE UserInfo SET [First Name] = '" + firstName + "' WHERE Username = '" + currentUser.getUserName() + "'");
+                    currentUser.setFirstName(firstName);
+                } else if (userIn.equals("4")) {
+                    String lastName;
+                    System.out.println("Please enter your new Last Name: ");
+                    lastName = scan.next().trim();
+                    stmt.executeUpdate("UPDATE UserInfo SET [Last Name] = '" + lastName + "' WHERE Username = '" + currentUser.getUserName() + "'");
+                    currentUser.setLastName(lastName);
+                }else if (userIn.equals("5")) {
+                    String email;
+                    System.out.println("Please enter your new email: ");
+                    email = scan.next().trim();
+                    stmt.executeUpdate("UPDATE UserInfo SET Email = '" + email + "' WHERE Username = '" + currentUser.getUserName() + "'");
+                    currentUser.setEmail(email);
+                }else if (userIn.equals("6")) {
+                    String status;
+                    System.out.println("Please enter your new status: ");
+                    status = scan.next().trim();
+                    stmt.executeUpdate("UPDATE UserInfo SET Status = '" + status + "' WHERE Username = '" + currentUser.getUserName() + "'");
+                    currentUser.setStatus(status);
+                }else {
+                    System.out.print("Invalid Input! Please choose a valid option: ");
+                }
+            }while(!userIn.equals("1")&&!userIn.equals("2")&&!userIn.equals("3")&&!userIn.equals("4")&&!userIn.equals("5")&&!userIn.equals("6"));
+
+        } catch (SQLException se) {
+            System.out.println(se.getMessage());
+        } finally {
+            try {
+                if (db != null) {
+                    db.close();
+                }
+            } catch (SQLException se) {
+                System.out.println(se.getMessage());
+            }
+        }
+    }
+
+    /*
+     * Log user into system, verify entered credentials against database
+     */
     public static boolean userLogin() {
         // The database connection object
         Connection db = null;
@@ -113,13 +224,11 @@ public class CR_Client implements Runnable {
         Statement stmt;
         //Record/Result set
         ResultSet rs = null;
-        String Qt = "'";
         boolean result = false;
 
         String username, password;
         Scanner scan = new Scanner(System.in);
         do {
-            System.out.println("Type 'Q' to quit");
             System.out.print("Please enter your Username: ");
             username = scan.next().trim();
             System.out.print("Please enter your Password: ");
@@ -132,10 +241,19 @@ public class CR_Client implements Runnable {
                 stmt.setQueryTimeout(30);
 
                 //Create resultset based on user credentials
-                rs = stmt.executeQuery("SELECT * FROM [UserInfo] WHERE Username = " + Qt + username + Qt + " AND Password = " + Qt + password + Qt);
+                rs = stmt.executeQuery("SELECT * FROM [UserInfo] WHERE Username = '" + username + "' AND Password = '" + password + "'");
                 result = rs.next();
                 if (!result){
                     System.out.println("Invalid Username/Password!");
+                }else{
+                    currentUser = new User(
+                            rs.getString("First Name"),
+                            rs.getString("Last Name"),
+                            rs.getString("Email"),
+                            rs.getString("Username"),
+                            rs.getString("Password"),
+                            rs.getString("Status")
+                    );
                 }
 
             } catch (SQLException se) {
@@ -152,14 +270,18 @@ public class CR_Client implements Runnable {
                     System.out.println(se.getMessage());
                 }
             }
-        } while (!result && (!username.equals("Q") || !password.equals("Q")));
+        } while (!result);
 
         return result;
     }
 
+    /*
+     * Create a new account, prompts user for qualifying criteria and enters information into database
+     * Verifies input to ensure no duplication of existing user
+     */
     public static void userSignUp(){
-        String fName,lName,username,password,email;
-        boolean exists = false;
+        String fName,lName,username,password,email,status;
+        boolean exists;
         Scanner scan = new Scanner(System.in);
         User entity;
         do {
@@ -173,17 +295,20 @@ public class CR_Client implements Runnable {
             password = scan.next().trim();
             System.out.print("Please enter a valid e-mail address: ");
             email = scan.next().trim();
+            status = "I'm a new user";
 
-            entity = new User(fName,lName,email,username,password);
+            entity = new User(fName,lName,email,username,password,status);
             exists = verifyNewAcc(entity);
         }while(exists);
 
         System.out.println("\nAccount created successfully!\n");
-        scan.close();
         displayTitleMenu();
 
     }
 
+    /*
+     * Verifies user input to ensure no duplication of existing user occurs
+     */
     public static boolean verifyNewAcc(User entity){
         // The database connection object
         Connection db = null;
@@ -191,7 +316,6 @@ public class CR_Client implements Runnable {
         Statement stmt;
         //Record/Result set
         ResultSet rs = null;
-        String Qt = "'";
         boolean status = false;
             try {
                 //Create SQLite database connection
@@ -200,16 +324,16 @@ public class CR_Client implements Runnable {
                 stmt.setQueryTimeout(30);
 
                 //Create resultset based on user credentials
-                rs = stmt.executeQuery("SELECT * FROM UserInfo WHERE Username = " + Qt + entity.getUserName() + Qt);
+                rs = stmt.executeQuery("SELECT * FROM UserInfo WHERE Username = '" + entity.getUserName() + "'");
                 status = rs.next();
                 if(status){
                     System.out.println("An account with that username already exists!\n");
                 }else{
-                    stmt.executeUpdate("INSERT INTO UserInfo ([First Name],[Last Name],Username,Password) VALUES ("
-                            + Qt + entity.getFirstName() + Qt + ", "
-                            + Qt + entity.getLastName() + Qt + ", "
-                            + Qt + entity.getUserName() + Qt + ", "
-                            + Qt + entity.getPassword() + Qt + ")");
+                    stmt.executeUpdate("INSERT INTO UserInfo ([First Name],[Last Name],Username,Password) VALUES ('"
+                             + entity.getFirstName() + "', '"
+                             + entity.getLastName() + "', '"
+                             + entity.getUserName() + "', '"
+                             + entity.getPassword() + "')");
                 }
 
             } catch (SQLException se) {
@@ -229,6 +353,10 @@ public class CR_Client implements Runnable {
         return status;
     }
 
+    /*
+     * Creates thread object to establish connection to an existing server
+     * Sends user input to server
+     */
     public static void joinChatRoom(){
         // The default port.
         int portNumber = 6185;
@@ -263,12 +391,6 @@ public class CR_Client implements Runnable {
                 while (!closed) {
                     os.println(inputLine.readLine().trim());
                 }
-        /*
-         * Close the output stream, close the input stream, close the socket.
-         */
-                os.close();
-                is.close();
-                clientSocket.close();
             } catch (IOException e) {
                 System.err.println("IOException:  " + e);
             }

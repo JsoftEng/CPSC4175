@@ -143,8 +143,13 @@ class clientThread extends Thread {
             }
 
       /* Welcome the new the client. */
-            os.println("Welcome " + name
-                    + " to our chat room.\nTo leave enter /quit in a new line.");
+            os.println(
+                    "----------------------------------" +
+                    "\nWelcome " + name
+                    + " to our chat room." +
+                    "\nTo leave enter /quit in a new line." +
+                    "\nTo send a private message enter '@' followed by the recipient's username." +
+                    "\n----------------------------------");
             synchronized (this) {
                 for (int i = 0; i < maxClientsCount; i++) {
                     if (threads[i] != null && threads[i] == this) {
