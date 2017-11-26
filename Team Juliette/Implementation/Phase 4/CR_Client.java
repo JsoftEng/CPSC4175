@@ -86,6 +86,7 @@ public class CR_Client implements Runnable {
             } else if (userIn.equals("2")) {
                 if(userLogin()){
                     System.out.println("Login Successful!");
+                    userLogout = false;
                     do {
                         displayMainMenu();
                     }while(!userLogout);
@@ -119,7 +120,7 @@ public class CR_Client implements Runnable {
                 closed = false;
                 joinChatRoom();
             } else if (userIn.equals("2")) {
-                //TODO
+                System.out.println("Functionality not implemented yet!");
             } else if (userIn.equals("3")) {
                 editUserProfile();
             } else if (userIn.equals("4")) {
@@ -166,36 +167,42 @@ public class CR_Client implements Runnable {
                     username = scan.next().trim();
                     stmt.executeUpdate("UPDATE UserInfo SET Username = '" + username + "' WHERE Username = '" + currentUser.getUserName() + "'");
                     currentUser.setUserName(username);
+                    System.out.println("Profile updated!");
                 } else if (userIn.equals("2")) {
                     String password;
                     System.out.println("Please enter your new Password: ");
                     password = scan.next().trim();
                     stmt.executeUpdate("UPDATE UserInfo SET Password = '" + password + "' WHERE Username = '" + currentUser.getUserName() + "'");
                     currentUser.setPassword(password);
+                    System.out.println("Profile updated!");
                 } else if (userIn.equals("3")) {
                     String firstName;
                     System.out.println("Please enter your new First Name: ");
                     firstName = scan.next().trim();
                     stmt.executeUpdate("UPDATE UserInfo SET [First Name] = '" + firstName + "' WHERE Username = '" + currentUser.getUserName() + "'");
                     currentUser.setFirstName(firstName);
+                    System.out.println("Profile updated!");
                 } else if (userIn.equals("4")) {
                     String lastName;
                     System.out.println("Please enter your new Last Name: ");
                     lastName = scan.next().trim();
                     stmt.executeUpdate("UPDATE UserInfo SET [Last Name] = '" + lastName + "' WHERE Username = '" + currentUser.getUserName() + "'");
                     currentUser.setLastName(lastName);
+                    System.out.println("Profile updated!");
                 }else if (userIn.equals("5")) {
                     String email;
                     System.out.println("Please enter your new email: ");
                     email = scan.next().trim();
                     stmt.executeUpdate("UPDATE UserInfo SET Email = '" + email + "' WHERE Username = '" + currentUser.getUserName() + "'");
                     currentUser.setEmail(email);
+                    System.out.println("Profile updated!");
                 }else if (userIn.equals("6")) {
                     String status;
                     System.out.println("Please enter your new status: ");
                     status = scan.next().trim();
                     stmt.executeUpdate("UPDATE UserInfo SET Status = '" + status + "' WHERE Username = '" + currentUser.getUserName() + "'");
                     currentUser.setStatus(status);
+                    System.out.println("Profile updated!");
                 }else {
                     System.out.print("Invalid Input! Please choose a valid option: ");
                 }
@@ -295,13 +302,12 @@ public class CR_Client implements Runnable {
             password = scan.next().trim();
             System.out.print("Please enter a valid e-mail address: ");
             email = scan.next().trim();
-            status = "I'm a new user";
+            status = "I am a new user";
 
             entity = new User(fName,lName,email,username,password,status);
             exists = verifyNewAcc(entity);
         }while(exists);
 
-        System.out.println("\nAccount created successfully!\n");
         displayTitleMenu();
 
     }
@@ -329,11 +335,14 @@ public class CR_Client implements Runnable {
                 if(status){
                     System.out.println("An account with that username already exists!\n");
                 }else{
-                    stmt.executeUpdate("INSERT INTO UserInfo ([First Name],[Last Name],Username,Password) VALUES ('"
+                    stmt.executeUpdate("INSERT INTO UserInfo ([First Name],[Last Name],Username,Password,Email,Status) VALUES ('"
                              + entity.getFirstName() + "', '"
                              + entity.getLastName() + "', '"
                              + entity.getUserName() + "', '"
-                             + entity.getPassword() + "')");
+                             + entity.getPassword() + "', '"
+                             + entity.getEmail() + "', '"
+                             + entity.getStatus() + "')");
+                    System.out.println("\nAccount created successfully!\n");
                 }
 
             } catch (SQLException se) {
@@ -388,6 +397,7 @@ public class CR_Client implements Runnable {
 
         /* Create a thread to read from the server. */
                 new Thread(new CR_Client()).start();
+                os.println(currentUser.getUserName());
                 while (!closed) {
                     os.println(inputLine.readLine().trim());
                 }

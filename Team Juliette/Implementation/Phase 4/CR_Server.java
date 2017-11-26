@@ -103,44 +103,8 @@ class clientThread extends Thread {
             is = new DataInputStream(clientSocket.getInputStream());
             os = new PrintStream(clientSocket.getOutputStream());
             String name;
-            while (true) {
-                os.println("Enter your username.");
-                name = is.readLine().trim();
-                if (name.indexOf('@') == -1) {
-                    try {
-
-                        //Create SQLite database connection
-                        db = Connectivity.dbConnect();
-                        stmt = db.createStatement();
-                        stmt.setQueryTimeout(30);
-
-                        //Create resultset based on user credentials
-                        rs = stmt.executeQuery("SELECT * FROM [UserInfo] WHERE Username = " + Qt + name + Qt);
-                        result = rs.next();
-                        if (!result){
-                            os.println("Username does not exist!");
-                        }else{
-                            break;
-                        }
-
-                    } catch (SQLException se) {
-                        System.out.println(se.getMessage());
-                    } finally {
-                        try {
-                            if (db != null) {
-                                db.close();
-                                if (rs != null) {
-                                    rs.close();
-                                }
-                            }
-                        } catch (SQLException se) {
-                            System.out.println(se.getMessage());
-                        }
-                    }
-                } else {
-                    os.println("The name should not contain '@' character.");
-                }
-            }
+            /* Read username sent from client */
+            name = is.readLine().trim();
 
       /* Welcome the new the client. */
             os.println(
