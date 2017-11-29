@@ -2,8 +2,11 @@ import java.io.*;
 import java.net.*;
 import java.sql.*;
 
-/*
+/**
  * A chat server that delivers public and private messages.
+ * @author John Johnson
+ * @author Devon Moulter
+ * @version 11/28/2017
  */
 public class CR_Server {
 
@@ -60,7 +63,7 @@ public class CR_Server {
     }
 }
 
-/*
+/**
  * The chat client thread. This client thread opens the input and the output
  * streams for a particular client, ask the client's name, informs all the
  * clients connected to the server about the fact that a new client has joined

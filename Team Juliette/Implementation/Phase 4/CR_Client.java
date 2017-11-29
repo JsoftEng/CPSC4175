@@ -3,6 +3,14 @@ import java.net.*;
 import java.sql.*;
 import java.util.Scanner;
 
+/**
+ * The CR_Client is used to present the user with a general interface fby which to communicate to other users
+ * connected to the server.
+ *
+ * @author John Johnson
+ * @author Devon Moulter
+ * @version 11/28/2017
+ */
 public class CR_Client implements Runnable {
 
     // The client socket
@@ -41,9 +49,7 @@ public class CR_Client implements Runnable {
         }
     }
 
-    /*
-     * Create a thread to read from the server. (non-Javadoc)
-     *
+    /**
      * @see java.lang.Runnable#run()
      */
     public void run() {
@@ -66,7 +72,7 @@ public class CR_Client implements Runnable {
         }
     }
 
-    /*
+    /**
      * Display title menu choices
      */
     public static void displayTitleMenu(){
@@ -100,7 +106,7 @@ public class CR_Client implements Runnable {
         }while(!userIn.equals("1")&&!userIn.equals("2")&&!userIn.equals("3"));
     }
 
-    /*
+    /**
      * Display main menu choices
      */
     public static void displayMainMenu(){
@@ -132,6 +138,9 @@ public class CR_Client implements Runnable {
         }while(!userIn.equals("1")&&!userIn.equals("2")&&!userIn.equals("3")&&!userIn.equals("4"));
     }
 
+    /**
+     * Display and enable modification of editable criteria in user profile
+     */
     public static void editUserProfile() {
         Connection db = null;
         Statement stmt;
@@ -221,8 +230,9 @@ public class CR_Client implements Runnable {
         }
     }
 
-    /*
+    /**
      * Log user into system, verify entered credentials against database
+     * @return boolean True if supplied user credentials match a valid entry in database, false otherwise.
      */
     public static boolean userLogin() {
         // The database connection object
@@ -282,7 +292,7 @@ public class CR_Client implements Runnable {
         return result;
     }
 
-    /*
+    /**
      * Create a new account, prompts user for qualifying criteria and enters information into database
      * Verifies input to ensure no duplication of existing user
      */
@@ -312,8 +322,10 @@ public class CR_Client implements Runnable {
 
     }
 
-    /*
+    /**
      * Verifies user input to ensure no duplication of existing user occurs
+     * @param entity temporary user object to verify existence in database.
+     * @return boolean False if user already exists
      */
     public static boolean verifyNewAcc(User entity){
         // The database connection object
@@ -362,7 +374,7 @@ public class CR_Client implements Runnable {
         return status;
     }
 
-    /*
+    /**
      * Creates thread object to establish connection to an existing server
      * Sends user input to server
      */
